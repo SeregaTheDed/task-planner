@@ -23,24 +23,19 @@ class Task{
     #numberNode;
     #titleNode;
     #descriptionNode;
+
     get node() {
         return this.#taskNode;
     }
-    // <div class="task">
-    //   <div class="task__number">1</div>
-    //   <div class="task__content">
-    //     <div class="task__title">Записаться к врачу</div>
-    //     <textarea  class="task__description" onkeyup="textAreaAdjust(this)">Прийти в кабинет 8 по адресу ул. Пушкина и записаться к врачу</textarea>
-    //   </div>
-    // </div>
+
     constructor(number, title, description){
         this.#number = number;
         this.#title = title;
         this.#description = description;
-        this.initNode();
+        this.#initNode();
     }
 
-    initNode() {
+    #initNode() {
         let taskNode = document.createElement('div');
         taskNode.classList.add('task');
 
@@ -72,6 +67,7 @@ class Task{
     }
 }
 
+
 let tasks = [
     new Task(1, 'Записаться к врачу', 'Прийти в кабинет 8 по адресу ул. Пушкина и записаться к врачу'),
     new Task(2, 'Пройти собеседование', 'Зайти в специальное приложение для собеседования и пройти его'),
@@ -80,9 +76,7 @@ let tasks = [
 
 const taskContainerNode = document.getElementById('todolist');
 
-tasks.forEach(elem => taskContainerNode.append(elem.node));
-
 document.addEventListener('DOMContentLoaded', ()=>
 {
-    //fillTable();
+    tasks.forEach(elem => taskContainerNode.append(elem.node));
 });
