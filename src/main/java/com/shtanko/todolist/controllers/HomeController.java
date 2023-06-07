@@ -1,4 +1,4 @@
-package com.shtanko.taskplanner.controllers;
+package com.shtanko.todolist.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

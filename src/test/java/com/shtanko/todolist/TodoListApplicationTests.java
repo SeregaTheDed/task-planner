@@ -1,10 +1,10 @@
-package com.shtanko.taskplanner;
+package com.shtanko.todolist;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TaskPlannerApplicationTests {
+class TodoListApplicationTests {
 
 	@Test
 	void contextLoads() {
