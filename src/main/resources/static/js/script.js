@@ -1,6 +1,5 @@
 'use strict'
 
-
 function textAreaAdjust(element) {
     element.style.height = "1px";
     element.style.height = (25+element.scrollHeight)+"px";
@@ -11,10 +10,6 @@ function textAreaAdjustAll() {
     textareas.forEach(elem => textAreaAdjust(elem));
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    textAreaAdjustAll();
-});
-
 class Task{
     #number;
     #title;
@@ -24,9 +19,13 @@ class Task{
     #titleNode;
     #descriptionNode;
 
-    get node() {
-        return this.#taskNode;
-    }
+    get node() { return this.#taskNode; }
+
+    get number() { return this.#number; }
+
+    get title() { return this.#title; }
+
+    get description() { return this.#description; }
 
     constructor(number, title, description){
         this.#number = number;
@@ -48,9 +47,9 @@ class Task{
         taskContentNode.classList.add('task__content');
         taskNode.append(taskContentNode);
 
-        let titleNode = document.createElement('div');
+        let titleNode = document.createElement('input');
         titleNode.classList.add('task__title');
-        titleNode.textContent = this.#title;
+        titleNode.value = this.#title;
         taskContentNode.append(titleNode);
 
         let descriptionNode = document.createElement('textarea');
@@ -67,6 +66,30 @@ class Task{
     }
 }
 
+class TodoList{
+    #taskArray;
+    #todoListId;
+
+    get maxNumber() {
+        return this.#taskArray.length;
+    }
+
+    constructor(taskArray, todoListId){
+        this.#todoListId = todoListId;
+        this.#init(taskArray.sort((a,b) => a.number - b.number));
+    }
+    #init(taskArray){
+        this.#taskArray = [];
+        taskArray.forEach(elem => this.addNewTask(elem.title, elem.description) );
+        textAreaAdjustAll();
+    }
+    addNewTask(title, description){
+        const taskContainerNode = document.getElementById(this.#todoListId);
+        const newTask = new Task(this.maxNumber+1, title, description);
+        this.#taskArray.push(newTask);
+        taskContainerNode.append(newTask.node);
+    }
+}
 
 let tasks = [
     new Task(1, 'Записаться к врачу', 'Прийти в кабинет 8 по адресу ул. Пушкина и записаться к врачу'),
@@ -74,9 +97,21 @@ let tasks = [
     new Task(3, 'Подготовиться к экзамену', 'Очень интересная мысль меня посетила - подготовиться к экзамену. Но еще много времени для подготовки - до осени'),
 ];
 
-const taskContainerNode = document.getElementById('todolist');
+
+
+
+let todoList = new TodoList(tasks, 'todolist');
+
+document.getElementById('add_new_task_button').addEventListener('click', () => {
+    todoList.addNewTask('', '');
+});
+document.getElementById('save_tasks_button').addEventListener('click', () => {
+    //
+});
+
+
 
 document.addEventListener('DOMContentLoaded', ()=>
 {
-    tasks.forEach(elem => taskContainerNode.append(elem.node));
+    
 });

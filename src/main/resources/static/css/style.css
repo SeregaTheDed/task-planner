@@ -34,6 +34,9 @@ body {
 .task__content{
     width: 100%;
     padding: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .task__title {
@@ -46,4 +49,24 @@ body {
     height: max-content;
     font-size: 28px;
     padding: 10px;
+}
+
+.buttons-container {
+    align-items: center;
+    display: flex;
+    gap: 40px;
+    margin-top: 10px;
+    margin-bottom: 160px;
+    flex-direction: column;
+}
+
+.button {
+    font-size: 24px;
+    padding: 10px;
+    border-radius: 40px;
+    width: max-content;
+}
+
+#save_tasks_button { 
+    font-size: 48px;
 }
