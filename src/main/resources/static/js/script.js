@@ -55,14 +55,20 @@ class Task{
     #numberNode;
     #titleNode;
     #descriptionNode;
+    #deleteButtonNode;
 
     get node() { return this.#taskNode; }
 
     get number() { return this.#number; }
+    set number(value) {
+        this.#number = value;
+        this.#numberNode.textContent = value;
+    }
 
     get title() { return this.#title; }
 
     get description() { return this.#description; }
+    get deleteButtonNode() { return this.#deleteButtonNode; }
 
     constructor(number, title, description){
         this.#number = number;
@@ -95,19 +101,26 @@ class Task{
         descriptionNode.setAttribute('onkeyup', 'textAreaAdjust(this)');
         taskContentNode.append(descriptionNode);
 
+        let deleteButtonNode = document.createElement('button');
+        deleteButtonNode.classList.add('button');
+        deleteButtonNode.textContent = 'Удалить';
+        taskNode.append(deleteButtonNode);
+
+
         this.#taskNode = taskNode;
         this.#numberNode = numberNode;
         this.#titleNode = titleNode;
         this.#descriptionNode = descriptionNode;
+        this.#deleteButtonNode = deleteButtonNode;
 
-        this.#initChangeEvents();
+        this.#initChangeEvents(taskNode, titleNode, descriptionNode, deleteButtonNode);
     }
 
-    #initChangeEvents(){
-        this.#titleNode.addEventListener('input', (e) => {
+    #initChangeEvents(taskNode, titleNode, descriptionNode, deleteButtonNode){
+        titleNode.addEventListener('input', (e) => {
             this.#title = e.target.value;
         });
-        this.#descriptionNode.addEventListener('input', (e) => {
+        descriptionNode.addEventListener('input', (e) => {
             this.#description = e.target.value;
         });
     }
@@ -135,7 +148,25 @@ class TodoList{
         const newTask = new Task(this.maxNumber+1, title, description);
         this.#taskArray.push(newTask);
         taskContainerNode.append(newTask.node);
+        newTask.deleteButtonNode.addEventListener('click', (e) => {
+            this.deleteTaskByNode(e.target.parentNode);
+        });
     }
+    deleteTask(task){
+        this.#taskArray = this.#taskArray.filter(item => item !== task);
+        task.node.remove();
+        let i = 1;
+        for (const task of this.#taskArray) {
+            task.number = i;
+            i++;
+        }
+    }
+
+    deleteTaskByNode(taskNode){
+        let task = this.#taskArray.filter(item => item.node === taskNode)[0];
+        this.deleteTask(task);
+    }
+
     saveTasks(taskService){
         taskService.setAllTasks(this.#taskArray).then(response =>{
             if (response.ok){
