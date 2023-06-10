@@ -14,7 +14,7 @@ public class SQLiteManager {
              Statement statement = connection.createStatement()) {
             String addTasksTableSql = "CREATE TABLE IF NOT EXISTS " +
                     "tasks (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "id INTEGER PRIMARY KEY AUTO_INCREMENT, " +
                     "sort_index INTEGER, " +
                     "title TEXT, " +
                     "description TEXT)";
@@ -50,4 +50,25 @@ public class SQLiteManager {
 
         return tasks;
     }
+
+    public void setAllTasks(List<TaskDTO> tasks) {
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+             Statement statement = connection.createStatement()) {
+            String deleteSql = "DELETE FROM tasks";
+            statement.executeUpdate(deleteSql);
+
+            String insertSql = "INSERT INTO tasks (sort_index, title, description) VALUES (?, ?, ?)";
+            try (PreparedStatement insertStatement = connection.prepareStatement(insertSql)) {
+                for (TaskDTO task : tasks) {
+                    insertStatement.setInt(1, task.getSortIndex());
+                    insertStatement.setString(2, task.getTitle());
+                    insertStatement.setString(3, task.getDescription());
+                    insertStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error setting tasks: " + e.getMessage());
+        }
+    }
+
 }

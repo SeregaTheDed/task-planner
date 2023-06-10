@@ -5,9 +5,55 @@ function textAreaAdjust(element) {
     element.style.height = (25+element.scrollHeight)+"px";
 }
 
+
+
 function textAreaAdjustAll() {
     var textareas = document.querySelectorAll(".task__description");
     textareas.forEach(elem => textAreaAdjust(elem));
+}
+
+class TaskService {
+    getAllTasks() {
+        return fetch('/task/getAllTasks')
+            .then(response => response.json())
+            .then(data => {
+                // Обработка полученных данных
+                return data;
+            })
+            .catch(error => {
+                console.error('Ошибка при получении данных:', error);
+            });
+    }
+
+    setAllTasks(tasks) {
+        tasks = Array.from(tasks).map((input, index) => ({
+            id: 0,
+            sortIndex: input.number,
+            title: input.title,
+            description: input.description,
+        }));
+        console.log({listFromFrontend: tasks})
+        //const jsonData = JSON.stringify({listFromFrontend: tasks});
+        const jsonData = JSON.stringify(tasks);
+
+        fetch('/task/setAllTasks', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonData,
+        }).then(response => {
+                if (response.ok) {
+                    console.log('Tasks updated successfully');
+                } else {
+                    console.log('Error updating tasks: ' + response.statusText);
+                }
+            })
+            .catch(error => {
+                console.error('Request error:', error);
+            });
+    }
 }
 
 class Task{
@@ -89,29 +135,36 @@ class TodoList{
         this.#taskArray.push(newTask);
         taskContainerNode.append(newTask.node);
     }
+    saveTasks(taskServer){
+        taskService.setAllTasks(this.#taskArray);
+    }
 }
 
-let tasks = [
-    new Task(1, 'Записаться к врачу', 'Прийти в кабинет 8 по адресу ул. Пушкина и записаться к врачу'),
-    new Task(2, 'Пройти собеседование', 'Зайти в специальное приложение для собеседования и пройти его'),
-    new Task(3, 'Подготовиться к экзамену', 'Очень интересная мысль меня посетила - подготовиться к экзамену. Но еще много времени для подготовки - до осени'),
-];
+// let tasks = [
+//     new Task(1, 'Записаться к врачу', 'Прийти в кабинет 8 по адресу ул. Пушкина и записаться к врачу'),
+//     new Task(2, 'Пройти собеседование', 'Зайти в специальное приложение для собеседования и пройти его'),
+//     new Task(3, 'Подготовиться к экзамену', 'Очень интересная мысль меня посетила - подготовиться к экзамену. Но еще много времени для подготовки - до осени'),
+// ];
+
+let tasks;
+
+const taskService = new TaskService();
+let todoList;
+taskService.getAllTasks()
+    .then(gettedTasks => {
+        tasks = gettedTasks;
+    })
+    .then(() => {
+        todoList = new TodoList(tasks, 'todolist');
+    });
 
 
-
-
-let todoList = new TodoList(tasks, 'todolist');
 
 document.getElementById('add_new_task_button').addEventListener('click', () => {
     todoList.addNewTask('', '');
 });
 document.getElementById('save_tasks_button').addEventListener('click', () => {
-    //
+    todoList.saveTasks(taskService);
 });
 
 
-
-document.addEventListener('DOMContentLoaded', ()=>
-{
-    
-});
