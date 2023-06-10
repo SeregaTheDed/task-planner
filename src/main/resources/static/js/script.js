@@ -36,23 +36,14 @@ class TaskService {
         //const jsonData = JSON.stringify({listFromFrontend: tasks});
         const jsonData = JSON.stringify(tasks);
 
-        fetch('/task/setAllTasks', {
+        return fetch('/task/setAllTasks', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json; charset=UTF-8',
             },
             body: jsonData,
-        }).then(response => {
-                if (response.ok) {
-                    console.log('Tasks updated successfully');
-                } else {
-                    console.log('Error updating tasks: ' + response.statusText);
-                }
-            })
-            .catch(error => {
-                console.error('Request error:', error);
-            });
+        });
     }
 }
 
@@ -109,6 +100,16 @@ class Task{
         this.#titleNode = titleNode;
         this.#descriptionNode = descriptionNode;
 
+        this.#initChangeEvents();
+    }
+
+    #initChangeEvents(){
+        this.#titleNode.addEventListener('input', (e) => {
+            this.#title = e.target.value;
+        });
+        this.#descriptionNode.addEventListener('input', (e) => {
+            this.#description = e.target.value;
+        });
     }
 }
 
@@ -135,8 +136,16 @@ class TodoList{
         this.#taskArray.push(newTask);
         taskContainerNode.append(newTask.node);
     }
-    saveTasks(taskServer){
-        taskService.setAllTasks(this.#taskArray);
+    saveTasks(taskService){
+        taskService.setAllTasks(this.#taskArray).then(response =>{
+            if (response.ok){
+                alert('Данные успешно сохранены');
+            }
+            else {
+                alert('Произошла ошибка, но мы уже работаем над ней!');
+            }
+        });
+
     }
 }
 
